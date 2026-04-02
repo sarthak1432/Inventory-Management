@@ -3,40 +3,40 @@ import { X, Save, Plus, ShieldCheck, Package, Layers, User, ChevronDown, CheckCi
 import { motion, AnimatePresence } from 'framer-motion';
 
 const InputField = ({ label, icon: Icon, ...props }) => (
-  <div className="space-y-2 group">
-    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 group-focus-within:text-indigo-600 transition-colors">
+  <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+    <label className="text-xs font-semibold text-slate-600">
       {label}
     </label>
     <div className="relative">
-        <Icon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={16} />
+        <Icon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={16} />
         <input 
             {...props}
-            className="w-full glass-input rounded-2xl pl-12 pr-6 py-4 focus:outline-none font-semibold text-sm placeholder:text-slate-300 shadow-sm"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 font-medium text-sm placeholder:text-slate-400 transition-all shadow-sm"
         />
     </div>
   </div>
 );
 
 const SelectField = ({ label, icon: Icon, options, value, onChange, name }) => (
-  <div className="space-y-2 group">
-    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 group-focus-within:text-indigo-600 transition-colors">
+  <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+    <label className="text-xs font-semibold text-slate-600">
       {label}
     </label>
     <div className="relative">
-        <Icon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={16} />
+        <Icon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={16} />
         <select 
             name={name}
             value={value}
             onChange={onChange}
-            className="w-full glass-input rounded-2xl pl-12 pr-10 py-4 focus:outline-none font-semibold text-sm appearance-none cursor-pointer shadow-sm"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-10 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 font-medium text-sm appearance-none cursor-pointer shadow-sm transition-all text-slate-700"
         >
-            <option value="" disabled>Select Workspace...</option>
+            <option value="" disabled>Select Department...</option>
             {options.map(opt => (
                 <option key={opt} value={opt} className="text-slate-900">{opt}</option>
             ))}
-            <option value="Custom / Other..." className="text-indigo-600 font-bold italic">Custom Laboratory...</option>
+            <option value="Custom / Other..." className="text-indigo-600 font-medium">Custom Department...</option>
         </select>
-        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within:text-indigo-600 transition-colors" size={16} />
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
     </div>
   </div>
 );
@@ -131,56 +131,44 @@ const ItemModal = ({ isOpen, onClose, onSave, editingItem, departments }) => {
 
           {/* Modal Container */}
           <motion.div 
-            initial={{ opacity: 0, y: 40, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="relative w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] glass-panel rounded-[1.5rem] sm:rounded-[2.5rem] shadow-[0_25px_80px_-15px_rgba(0,0,0,0.3)] overflow-hidden pointer-events-auto flex flex-col"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="relative w-full max-w-xl max-h-[90vh] bg-white rounded-xl shadow-2xl overflow-hidden pointer-events-auto flex flex-col"
           >
-            {/* Header with Gradient */}
-            <div className="p-6 sm:p-8 lg:p-12 relative overflow-hidden bg-white/40">
-              <div className="relative z-10 flex items-center justify-between">
-                  <div className="flex items-center gap-3 sm:gap-5">
-                      <motion.div 
-                        initial={{ rotate: -20, scale: 0.8 }}
-                        animate={{ rotate: 0, scale: 1 }}
-                        className="w-12 h-12 sm:w-16 sm:h-16 gradient-bg rounded-2xl sm:rounded-3xl shadow-xl shadow-indigo-500/20 flex items-center justify-center text-white"
-                      >
-                        <Package size={24} className="sm:hidden" />
-                        <Package size={32} className="hidden sm:block" />
-                      </motion.div>
+            {/* Header */}
+            <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-slate-100 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 gradient-bg rounded-lg shadow-sm flex items-center justify-center text-white">
+                        <Package size={24} />
+                      </div>
                       <div>
-                        <h2 className="text-lg sm:text-2xl font-black text-slate-900 leading-tight">
-                            {editingItem ? 'Update Asset' : 'Registry Entry'}
+                        <h2 className="text-lg font-bold text-slate-800">
+                            {editingItem ? 'Update Stock Item' : 'Add New Stock'}
                         </h2>
-                        <div className="flex items-center gap-2 mt-1 px-3 py-1 bg-white/60 border border-white/80 rounded-full w-fit">
-                            <ShieldCheck size={12} className="text-indigo-600" />
-                            <span className="text-[10px] font-black text-indigo-700 tracking-widest uppercase">System Validation: Secured</span>
-                        </div>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                            {editingItem ? 'Modify existing inventory details' : 'Enter details for the new inventory item'}
+                        </p>
                       </div>
                   </div>
                   <button 
                     onClick={onClose} 
-                    className="p-3 hover:bg-red-50 hover:text-red-600 rounded-2xl transition-all text-slate-400 group"
+                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-400 hover:text-slate-600"
                   >
-                    <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
+                    <X size={20} />
                   </button>
               </div>
-              
-              {/* Decorative elements */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-100/30 blur-[100px] rounded-full -mr-32 -mt-32" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-100/30 blur-[80px] rounded-full -ml-16 -mb-16" />
-            </div>
 
             {/* Form Body + Footer Combined for proper submission */}
             <form onSubmit={handleSubmit} className="flex flex-col flex-grow overflow-hidden">
-                <div className="flex-grow overflow-y-auto px-6 sm:px-8 lg:px-12 py-6 space-y-10 custom-scrollbar">
+                <div className="flex-grow overflow-y-auto px-6 py-6 sm:px-8 space-y-6 custom-scrollbar bg-white">
                 
-                {/* SECTION: Asset Definition */}
-                <section className="space-y-6">
-                    <SectionHeader icon={Plus} title="Asset Definition" description="Core identity of the resource" />
-                    <div className="grid grid-cols-1 gap-6">
-                    <InputField 
-                            label="Asset Name" 
+                {/* Compact Grid Structure for Form */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                    {/* Full Width Row */}
+                    <div className="md:col-span-2">
+                        <InputField 
+                            label="Item Name" 
                             icon={Package} 
                             name="name"
                             required
@@ -189,71 +177,12 @@ const ItemModal = ({ isOpen, onClose, onSave, editingItem, departments }) => {
                             onChange={handleChange}
                         />
                     </div>
-                </section>
-
-                {/* SECTION: Assignment & Location */}
-                <section className="space-y-6">
-                    <SectionHeader icon={Layers} title="Operational Context" description="Where and who manages this asset" />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <SelectField 
-                            label="Assigned Workspace" 
-                            icon={Layers} 
-                            name="department"
-                            options={departments}
-                            value={formData.department}
-                            onChange={handleChange}
-                        />
-                        <InputField 
-                            label="Custody / Responsible" 
-                            icon={User} 
-                            name="assignee"
-                            placeholder="Enter name..."
-                            value={formData.assignee}
-                            onChange={handleChange}
-                        />
-                    </div>
                     
-                    <AnimatePresence>
-                        {(isCustom || formData.department === 'AI Lab') && (
-                            <motion.div 
-                                initial={{ height: 0, opacity: 0, y: -10 }}
-                                animate={{ height: 'auto', opacity: 1, y: 0 }}
-                                exit={{ height: 0, opacity: 0, y: -10 }}
-                                className="space-y-6 overflow-hidden pt-2"
-                            >
-                                {isCustom && (
-                                    <InputField 
-                                        label="Custom Location Override" 
-                                        icon={Plus} 
-                                        name="customDepartment"
-                                        required
-                                        placeholder="Enter laboratory/office name..."
-                                        value={formData.customDepartment}
-                                        onChange={handleChange}
-                                    />
-                                )}
-                                {formData.department === 'AI Lab' && (
-                                    <InputField 
-                                        label="Assignment Personnel" 
-                                        icon={User} 
-                                        name="assignTo"
-                                        placeholder="Secondary assignee..."
-                                        value={formData.assignTo}
-                                        onChange={handleChange}
-                                    />
-                                )}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </section>
-
-                {/* SECTION: Quantitative Data */}
-                <section className="space-y-6 pb-6">
-                    <SectionHeader icon={CheckCircle2} title="Inventory Metrics" description="Availability data" />
-                    <div className="grid grid-cols-1 gap-6">
+                    {/* Numerical Data */}
+                    <div>
                         <InputField 
-                            label="Operational Quantity" 
-                            icon={Package} 
+                            label="Quantity" 
+                            icon={Layers} 
                             type="number"
                             name="quantity"
                             required
@@ -262,26 +191,83 @@ const ItemModal = ({ isOpen, onClose, onSave, editingItem, departments }) => {
                             onChange={handleChange}
                         />
                     </div>
-                </section>
+
+                    <div className="md:col-span-2 border-t border-slate-100 pt-5 mt-2">
+                        <h3 className="text-sm font-bold text-slate-800 mb-4">Assignment Details</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                            <SelectField 
+                                label="Department" 
+                                icon={Layers} 
+                                name="department"
+                                options={departments}
+                                value={formData.department}
+                                onChange={handleChange}
+                            />
+                            <InputField 
+                                label="Assigned Personnel" 
+                                icon={User} 
+                                name="assignee"
+                                placeholder="Enter name (optional)..."
+                                value={formData.assignee}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </div>
+                    
+                    <AnimatePresence>
+                        {(isCustom || formData.department === 'AI Lab') && (
+                            <motion.div 
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="md:col-span-2 space-y-5 overflow-hidden"
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 mt-5">
+                                    {isCustom && (
+                                        <InputField 
+                                            label="Custom Department Name" 
+                                            icon={Plus} 
+                                            name="customDepartment"
+                                            required
+                                            placeholder="Enter department name..."
+                                            value={formData.customDepartment}
+                                            onChange={handleChange}
+                                        />
+                                    )}
+                                    {formData.department === 'AI Lab' && (
+                                        <InputField 
+                                            label="Secondary Assignee" 
+                                            icon={User} 
+                                            name="assignTo"
+                                            placeholder="Secondary assignee..."
+                                            value={formData.assignTo}
+                                            onChange={handleChange}
+                                        />
+                                    )}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
                 </div>
 
-                {/* Action Footer - Stacking on Mobile */}
-                <div className="px-6 sm:px-8 lg:px-12 py-6 sm:py-8 bg-white/40 border-t border-white/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+                {/* Action Footer */}
+                <div className="px-6 py-4 sm:px-8 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row items-center justify-end gap-3">
                     <button 
                     type="button" 
                     onClick={onClose}
-                    className="w-full sm:w-auto px-8 py-4 rounded-2xl border border-white/80 bg-white/60 hover:bg-white hover:shadow-lg transition-all font-black text-[10px] uppercase tracking-[0.2em] text-slate-400 hover:text-slate-800 order-2 sm:order-1"
+                    className="w-full sm:w-auto px-8 py-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-all font-semibold text-sm text-slate-600 order-2 sm:order-1"
                     >
-                        Discard Changes
+                        Cancel
                     </button>
                     <motion.button 
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="submit" 
-                    className="w-full sm:w-auto px-12 py-4 rounded-2xl gradient-bg gradient-bg-hover text-white font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-xl shadow-indigo-200 order-1 sm:order-2"
+                    className="w-full sm:w-auto px-8 py-3 rounded-xl gradient-bg gradient-bg-hover text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-md order-1 sm:order-2"
                     >
                     <Save size={18} />
-                    {editingItem ? 'Commit Updates' : 'Sync Gateway'}
+                    {editingItem ? 'Save Changes' : 'Add Stock'}
                     </motion.button>
                 </div>
             </form>
