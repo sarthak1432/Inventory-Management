@@ -32,18 +32,19 @@ const StatCard = ({ title, value, icon: Icon, color, trend, label }) => (
 );
 
 const Dashboard = ({ inventory }) => {
-  const totalItems = inventory.length;
+  const safeInventory = Array.isArray(inventory) ? inventory : [];
+  const totalItems = safeInventory.length;
   // General alerts card (overall inventory)
-  const lowStockItems = inventory.filter(item => item.quantity <= 5).length;
-  const totalDepartments = new Set(inventory.filter(i => i.department).map(item => item.department)).size;
+  const lowStockItems = safeInventory.filter(item => item?.quantity <= 5).length;
+  const totalDepartments = new Set(safeInventory.filter(i => i?.department).map(item => item.department)).size;
 
   // Specific requirement: Low stock (<= 50) for targeted departments
   const targetDepartments = ['3d section', 'front desk area', 'service department'];
-  const targetedLowStock = inventory.filter(item => {
-    if (!item.department) return false;
+  const targetedLowStock = safeInventory.filter(item => {
+    if (!item?.department) return false;
     const dept = item.department.toLowerCase();
     const isTargetDept = targetDepartments.some(td => dept.includes(td));
-    return isTargetDept && item.quantity <= 50;
+    return isTargetDept && (item.quantity || 0) <= 50;
   });
 
   return (
@@ -84,7 +85,7 @@ const Dashboard = ({ inventory }) => {
              <div>
                <h4 className="font-bold text-red-900">Restock Notifications</h4>
                <p className="text-[11px] font-bold text-red-600/70 tracking-wide uppercase mt-0.5">
-                 Priority Target Areas (<= 50 units)
+                 Priority Target Areas (&lt;= 50 units)
                </p>
              </div>
            </div>
