@@ -119,7 +119,7 @@ const ItemModal = ({ isOpen, onClose, onSave, editingItem, departments }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 lg:p-10 pointer-events-none">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 pointer-events-none">
           {/* Backdrop */}
           <motion.div 
             initial={{ opacity: 0 }}
@@ -131,13 +131,14 @@ const ItemModal = ({ isOpen, onClose, onSave, editingItem, departments }) => {
 
           {/* Modal Container */}
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="relative w-full max-w-xl max-h-[90vh] bg-white rounded-xl shadow-2xl overflow-hidden pointer-events-auto flex flex-col"
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
+            transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+            className="relative w-full max-w-xl max-h-[90vh] bg-white rounded-t-3xl sm:rounded-xl shadow-2xl overflow-hidden pointer-events-auto flex flex-col"
           >
             {/* Header */}
-            <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-slate-100 flex items-center justify-between">
+            <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-slate-100 flex items-start sm:items-center justify-between">
                   <div className="flex items-center gap-4">
                       <div className="w-12 h-12 gradient-bg rounded-lg shadow-sm flex items-center justify-center text-white">
                         <Package size={24} />
@@ -153,7 +154,7 @@ const ItemModal = ({ isOpen, onClose, onSave, editingItem, departments }) => {
                   </div>
                   <button 
                     onClick={onClose} 
-                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-400 hover:text-slate-600"
+                    className="p-2 -mr-2 bg-slate-100 sm:bg-transparent hover:bg-slate-200 sm:hover:bg-slate-100 rounded-full transition-colors text-slate-500 hover:text-slate-700"
                   >
                     <X size={20} />
                   </button>
