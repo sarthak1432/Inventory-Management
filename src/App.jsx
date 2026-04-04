@@ -7,7 +7,7 @@ import ItemModal from './components/ItemModal';
 import Sidebar from './components/Sidebar';
 import {
   Plus, Bell, User, RefreshCcw,
-  Package, TrendingUp, Check, X,
+  Package, TrendingUp, Check, X, Search
 } from 'lucide-react';
 
 /* ─── Greeting helper ─── */
@@ -53,6 +53,7 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => JSON.parse(localStorage.getItem('sidebarCollapsed') || 'false'));
   const [addingDept, setAddingDept]         = useState(false);
   const [newDeptName, setNewDeptName]       = useState('');
+  const [searchTerm, setSearchTerm]         = useState('');
 
   const loading = invLoading || deptLoading;
 
@@ -254,13 +255,28 @@ function App() {
                     {inventory.length} total assets registered
                   </p>
                 </div>
-                <button
-                  onClick={handleAddNew}
-                  className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-5 py-2.5 rounded-xl font-bold text-white text-sm transition-all shadow-md shadow-indigo-200 active:scale-95 self-start sm:self-auto"
-                >
-                  <Plus size={17} />
-                  Add Stocks
-                </button>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+                  <div className="relative group/search flex-grow sm:flex-grow-0 sm:min-w-[280px]">
+                    <Search 
+                      size={18} 
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/search:text-indigo-600 transition-colors pointer-events-none" 
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search items by name..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-sm"
+                    />
+                  </div>
+                  <button
+                    onClick={handleAddNew}
+                    className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-5 py-2.5 rounded-xl font-bold text-white text-sm transition-all shadow-md shadow-indigo-200 active:scale-95"
+                  >
+                    <Plus size={17} />
+                    Add Stocks
+                  </button>
+                </div>
               </div>
 
               {/* Department pill tabs - Horizontal Scroll on Mobile */}
@@ -345,6 +361,7 @@ function App() {
                 <InventoryTable
                   inventory={inventory}
                   activeDept={activeDept}
+                  searchTerm={searchTerm}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                 />

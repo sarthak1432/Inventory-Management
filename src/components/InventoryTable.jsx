@@ -1,9 +1,14 @@
 import React from 'react';
 import { Edit2, Trash2, User, Tag, AlertCircle } from 'lucide-react';
 
-const InventoryTable = ({ inventory, activeDept, onEdit, onDelete }) => {
+const InventoryTable = ({ inventory, activeDept, searchTerm, onEdit, onDelete }) => {
   const filteredInventory = inventory.filter(item => {
+    // If there is a search term, search globally (ignore department)
+    // Otherwise, filter by department
     const matchesDept = activeDept === 'All' || item.department === activeDept;
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    if (searchTerm) return matchesSearch;
     return matchesDept;
   });
 
@@ -17,9 +22,67 @@ const InventoryTable = ({ inventory, activeDept, onEdit, onDelete }) => {
     <div className="animate-fade-in bg-white rounded-b-2xl overflow-hidden">
 
       {/* Modern Data Grid with Horizontal Scroll Optimization */}
-      <div className="relative group/table">
-        <div className="overflow-x-auto custom-scrollbar overflow-y-hidden">
-          <table className="w-full text-left whitespace-nowrap min-w-[850px] lg:min-w-full border-collapse">
+      <div className="relative group/table bg-white">
+        
+        {/* MOBILE LAYOUT: Stacked Cards */}
+        <div className="md:hidden flex flex-col divide-y divide-slate-100">
+            {filteredInventory.map(item => {
+                const status = getStockStatus(item.quantity);
+                return (
+                    <div key={item.id} className="p-4 space-y-4 hover:bg-slate-50 transition-colors">
+                        {/* Header: Name and Status */}
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center font-bold text-xs text-indigo-700 shadow-sm shrink-0">
+                                    {item.name.substring(0,2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <div className="font-bold text-slate-900 text-sm">{item.name}</div>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.department || 'GLOBAL'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded bg-slate-50 text-[9px] font-black tracking-widest uppercase border ${status.color}`}>
+                                {status.label}
+                            </span>
+                        </div>
+                        
+                        {/* Body: Details Grid */}
+                        <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50/50 rounded-xl border border-slate-100">
+                            <div>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Stock Lvl</p>
+                                <p className="font-bold text-slate-800 text-sm">{item.quantity} Units</p>
+                            </div>
+                            <div>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Responsible</p>
+                                <p className="font-bold text-slate-700 text-xs truncate">{item.assignee || 'Unassigned'}</p>
+                            </div>
+                        </div>
+                        
+                        {/* Actions */}
+                        <div className="flex gap-2 pt-1">
+                            <button 
+                                onClick={() => onEdit(item)}
+                                className="flex-1 py-2 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-600 shadow-sm hover:border-indigo-300 hover:text-indigo-600 transition-colors flex items-center justify-center gap-2"
+                            >
+                                <Edit2 size={14} /> Edit
+                            </button>
+                            <button 
+                                onClick={() => onDelete(item.id)}
+                                className="flex-1 py-2 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-600 shadow-sm hover:border-red-300 hover:text-red-600 transition-colors flex items-center justify-center gap-2"
+                            >
+                                <Trash2 size={14} /> Delete
+                            </button>
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+
+        {/* DESKTOP LAYOUT: Traditional Table */}
+        <div className="hidden md:block overflow-x-auto custom-scrollbar overflow-y-hidden">
+          <table className="w-full text-left whitespace-nowrap min-w-full border-collapse">
           <thead>
             <tr className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-widest border-b border-slate-200">
               <th className="px-6 py-4">Asset Name</th>
@@ -29,6 +92,8 @@ const InventoryTable = ({ inventory, activeDept, onEdit, onDelete }) => {
               <th className="px-6 py-4">Responsible</th>
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
+
+            
           </thead>
           <tbody className="divide-y divide-slate-100">
             {filteredInventory.map((item) => {
@@ -109,7 +174,11 @@ const InventoryTable = ({ inventory, activeDept, onEdit, onDelete }) => {
             })}
           </tbody>
         </table>
-        {filteredInventory.length === 0 && (
+        <div className="hidden md:block absolute top-0 right-0 h-full w-10 bg-gradient-to-l from-white pointer-events-none opacity-0 group-hover/table:opacity-100 transition-opacity duration-300" />
+      </div>
+      </div>
+
+      {filteredInventory.length === 0 && (
           <div className="p-32 text-center flex flex-col items-center gap-4 opacity-40">
             <AlertCircle size={48} className="text-slate-300" />
             <div>
@@ -118,15 +187,13 @@ const InventoryTable = ({ inventory, activeDept, onEdit, onDelete }) => {
             </div>
           </div>
         )}
+      <div className="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center sm:text-left w-full sm:w-auto">
+            Showing {filteredInventory.length} items
         </div>
-        {/* Right Gradient Indicator for Mobile Scroll */}
-        <div className="absolute top-0 right-0 h-full w-10 bg-gradient-to-l from-white pointer-events-none opacity-0 group-hover/table:opacity-100 lg:hidden transition-opacity duration-300" />
-      </div>
-
-      <div className="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <button className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 font-bold text-[10px] tracking-widest uppercase hover:bg-white hover:text-slate-700 transition-all">Previous</button>
-          <button className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 font-bold text-[10px] tracking-widest uppercase hover:bg-white hover:text-slate-700 transition-all">Next</button>
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
+          <button className="flex-1 sm:flex-none px-4 py-2 rounded-lg border border-slate-200 text-slate-500 font-bold text-[10px] tracking-widest uppercase bg-white hover:bg-slate-50 hover:text-indigo-600 transition-all shadow-sm">Prev</button>
+          <button className="flex-1 sm:flex-none px-4 py-2 rounded-lg border border-slate-200 text-slate-500 font-bold text-[10px] tracking-widest uppercase bg-white hover:bg-slate-50 hover:text-indigo-600 transition-all shadow-sm">Next</button>
         </div>
       </div>
     </div>
