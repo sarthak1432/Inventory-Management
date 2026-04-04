@@ -74,7 +74,7 @@ const Sidebar = ({ activeTab, onTabChange, collapsed, onCollapsedChange }) => {
 
       {/* Sidebar panel */}
       <aside
-        className={`fixed top-0 left-0 h-screen z-40
+        className={`fixed top-0 left-0 h-screen z-[55]
           bg-slate-900 border-r border-white/5
           transition-all duration-300 ease-in-out flex flex-col
           ${collapsed ? 'w-[72px]' : 'w-72'}
