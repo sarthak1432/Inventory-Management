@@ -12,17 +12,12 @@ import { useDepartments } from './hooks/useDepartments';
 import { useEngagedStocks } from './hooks/useEngagedStocks';
 
 import { Package } from 'lucide-react';
+import { getGreeting } from './utils/helpers';
 
-/* ─── Greeting helper — pure, no deps ─── */
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 12) return 'Good morning';
-  if (h < 17) return 'Good afternoon';
-  return 'Good evening';
-}
 
 /* ══════════════════════════════════════════ */
 function App() {
+  // Database Hooks
   const { inventory, loading: invLoading, addItem, updateItem, deleteItem } = useInventory();
   const { departments, loading: deptLoading, addDepartment, updateDepartment, deleteDepartment } = useDepartments();
   const { engaged, loading: engLoading, engageStock, returnStock, removeEngagedStock } = useEngagedStocks();
