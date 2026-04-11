@@ -6,7 +6,8 @@ import {
   runTransaction, 
   serverTimestamp,
   query,
-  orderBy
+  orderBy,
+  deleteDoc
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
@@ -91,5 +92,15 @@ export const useEngagedStocks = () => {
     }
   }, []);
 
-  return { engaged, loading, engageStock, returnStock };
+  const removeEngagedStock = useCallback(async (id) => {
+    const engagedRef = doc(db, 'engaged', id);
+    try {
+      await deleteDoc(engagedRef);
+    } catch (err) {
+      console.error("Delete Engaged Stock Failed:", err);
+      throw err;
+    }
+  }, []);
+
+  return { engaged, loading, engageStock, returnStock, removeEngagedStock };
 };

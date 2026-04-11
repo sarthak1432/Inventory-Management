@@ -1,83 +1,88 @@
 import React, { useMemo } from 'react';
-import { Users, ShoppingCart, UserCheck, AlertTriangle, ArrowLeftRight, Clock, Info, Plus } from 'lucide-react';
+import { Users, ShoppingCart, UserCheck, AlertTriangle, ArrowLeftRight, Clock, Info, Plus, Trash2, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const EngagedBoardCard = ({ item, onReturn, departments = [] }) => {
+const EngagedBoardCard = ({ item, onReturn, onDelete, departments = [] }) => {
   const isReturnable = item.type === 'in-use';
-  
-  const deptHead = useMemo(() => {
-    return departments.find(d => d.name === item.department)?.head;
-  }, [departments, item.department]);
   
   return (
     <motion.div 
       layout
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
+      className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all group relative"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-[10px] text-slate-500">
-            {item.name.substring(0, 2).toUpperCase()}
+          <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center font-bold text-[10px] text-slate-400 border border-slate-100 uppercase">
+            {item.name.substring(0, 2)}
           </div>
           <div>
-            <h4 className="font-bold text-slate-900 text-sm leading-tight uppercase">{item.name}</h4>
+            <h4 className="font-bold text-slate-900 text-sm leading-tight uppercase tracking-tight">{item.name}</h4>
             <div className="flex items-center gap-2 mt-0.5">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none shrink-0">{item.department}</p>
-              {deptHead && (
-                <div className="flex items-center gap-1 pl-1.5 border-l border-slate-200">
-                  <User size={8} className="text-indigo-400" />
-                  <span className="text-[9px] font-black text-indigo-500 uppercase tracking-tighter truncate max-w-[50px]">{deptHead}</span>
-                </div>
-              )}
+              <span className="text-[9px] font-black text-indigo-600 uppercase tracking-widest">{item.department}</span>
               {item.receiver && (
-                <div className="flex items-center gap-1 pl-1.5 border-l border-slate-200">
-                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                  <span className="text-[9px] font-black text-indigo-700 uppercase tracking-tight">{item.receiver}</span>
-                </div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight pl-2 border-l border-slate-200">
+                  {item.receiver}
+                </span>
               )}
             </div>
           </div>
         </div>
         <div className="text-right">
-          <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest block leading-none">Qty</span>
-          <span className="text-sm font-black text-slate-900">{item.quantity}</span>
+          <p className="text-sm font-black text-slate-900 leading-none">{item.quantity}</p>
+          <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Units</p>
         </div>
       </div>
 
       {item.note && (
-        <div className="mb-4 p-2 bg-slate-50 rounded-lg flex gap-2 border border-slate-100">
-          <Info size={12} className="text-slate-400 shrink-0 mt-0.5" />
-          <p className="text-[10px] text-slate-500 font-medium leading-relaxed italic line-clamp-2">
-            "{item.note}"
-          </p>
-        </div>
+        <p className="text-[10px] text-slate-500 font-medium italic mb-4 line-clamp-1 opacity-70">
+          "{item.note}"
+        </p>
       )}
 
-      <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2">
+      <div className="flex items-center justify-between pt-3 border-t border-slate-50">
         <div className="flex items-center gap-1.5 text-slate-400">
-          <Clock size={12} />
+          <Clock size={10} />
           <span className="text-[9px] font-bold uppercase tracking-widest">
-            {item.timestamp?.toDate ? item.timestamp.toDate().toLocaleDateString() : 'Just now'}
+            {item.timestamp?.toDate ? item.timestamp.toDate().toLocaleDateString() : 'New'}
           </span>
         </div>
         
-        {isReturnable && (
-          <button
-            onClick={() => onReturn?.(item)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white rounded-lg transition-all text-[10px] font-bold uppercase tracking-wider"
-          >
-            <ArrowLeftRight size={12} />
-            Return
-          </button>
-        )}
+        <div className="flex gap-2">
+          {isReturnable ? (
+            <button
+              onClick={() => onReturn?.(item)}
+              className="px-3 py-1.5 bg-slate-900 hover:bg-indigo-600 text-white rounded-lg transition-all text-[10px] font-bold uppercase tracking-wider flex items-center gap-2"
+            >
+              <ArrowLeftRight size={10} />
+              Return
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-1 bg-slate-50 text-[9px] font-bold text-slate-400 rounded-md border border-slate-100 uppercase tracking-wider">
+                {item.type === 'sold' ? 'Sold' : 'Defaulty'}
+              </span>
+              <button
+                onClick={() => {
+                  if (window.confirm('Delete this record?')) {
+                    onDelete(item.id);
+                  }
+                }}
+                className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                title="Delete Record"
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </motion.div>
   );
 };
 
-const Board = ({ title, icon: Icon, items, color, bg, onReturn, departments }) => (
+const Board = ({ title, icon: Icon, items, color, bg, onReturn, onDelete, departments }) => (
   <div className="flex flex-col bg-slate-50/50 rounded-2xl md:rounded-3xl border border-slate-200/60 overflow-hidden h-full">
     <div className={`p-4 md:p-5 border-b border-slate-200/60 ${bg} flex items-center justify-between`}>
       <div className="flex items-center gap-2 md:gap-3">
@@ -99,14 +104,14 @@ const Board = ({ title, icon: Icon, items, color, bg, onReturn, departments }) =
         </div>
       ) : (
         items.map(item => (
-          <EngagedBoardCard key={item.id} item={item} onReturn={onReturn} departments={departments} />
+          <EngagedBoardCard key={item.id} item={item} onReturn={onReturn} onDelete={onDelete} departments={departments} />
         ))
       )}
     </div>
   </div>
 );
 
-const StocksEngagedTab = ({ engaged = [], onReturn, departments = [], onEngage, inventory = [] }) => {
+const StocksEngagedTab = ({ engaged = [], onReturn, onDeleteEngaged, departments = [], onEngage, inventory = [] }) => {
   const grouped = useMemo(() => {
     return {
       'in-use': engaged.filter(i => i.type === 'in-use'),
@@ -141,6 +146,7 @@ const StocksEngagedTab = ({ engaged = [], onReturn, departments = [], onEngage, 
         color="bg-indigo-600" 
         bg="bg-indigo-50/30"
         onReturn={onReturn}
+        onDelete={onDeleteEngaged}
         departments={departments}
       />
       <Board 
@@ -149,6 +155,7 @@ const StocksEngagedTab = ({ engaged = [], onReturn, departments = [], onEngage, 
         items={grouped['sold']} 
         color="bg-emerald-600"
         bg="bg-emerald-50/30"
+        onDelete={onDeleteEngaged}
         departments={departments}
       />
       <Board 
@@ -157,6 +164,7 @@ const StocksEngagedTab = ({ engaged = [], onReturn, departments = [], onEngage, 
         items={grouped['faulty']} 
         color="bg-red-600"
         bg="bg-red-50/30"
+        onDelete={onDeleteEngaged}
         departments={departments}
       />
       </div>

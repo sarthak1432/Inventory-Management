@@ -25,7 +25,7 @@ function getGreeting() {
 function App() {
   const { inventory, loading: invLoading, addItem, updateItem, deleteItem } = useInventory();
   const { departments, loading: deptLoading, addDepartment, updateDepartment, deleteDepartment } = useDepartments();
-  const { engaged, loading: engLoading, engageStock, returnStock } = useEngagedStocks();
+  const { engaged, loading: engLoading, engageStock, returnStock, removeEngagedStock } = useEngagedStocks();
 
   /* ── UI State — initialised from localStorage once ── */
   const [activeTab, setActiveTab] = useState(
@@ -231,6 +231,7 @@ function App() {
             <StocksEngagedTab 
               engaged={engaged} 
               onReturn={returnStock}
+              onDeleteEngaged={removeEngagedStock}
               departments={departments}
               onEngage={() => handleOpenEngage(null)}
               inventory={inventory}
