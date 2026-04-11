@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Users, ShoppingCart, UserCheck, AlertTriangle, ArrowLeftRight, Clock, Info, Plus, Trash2, User } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Users, ShoppingCart, UserCheck, AlertTriangle, ArrowLeftRight, Clock, Info, Plus, Trash2, User, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const EngagedBoardCard = ({ item, onReturn, onDelete, departments = [] }) => {
@@ -82,34 +82,54 @@ const EngagedBoardCard = ({ item, onReturn, onDelete, departments = [] }) => {
   );
 };
 
-const Board = ({ title, icon: Icon, items, color, bg, onReturn, onDelete, departments }) => (
-  <div className="flex flex-col bg-slate-50/50 rounded-2xl md:rounded-3xl border border-slate-200/60 overflow-hidden h-full">
-    <div className={`p-4 md:p-5 border-b border-slate-200/60 ${bg} flex items-center justify-between`}>
-      <div className="flex items-center gap-2 md:gap-3">
-        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center text-white shadow-lg ${color}`}>
-          <Icon size={16} className="md:w-5 md:h-5" />
+const Board = ({ title, icon: Icon, items, color, bg, onReturn, onDelete, departments }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  return (
+    <div className="flex flex-col bg-slate-50/50 rounded-2xl md:rounded-3xl border border-slate-200/60 overflow-hidden h-full">
+      <button 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className={`w-full p-4 md:p-5 border-b border-slate-200/60 ${bg} flex items-center justify-between hover:brightness-95 transition-all text-left group`}
+      >
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center text-white shadow-lg ${color} group-hover:scale-110 transition-transform`}>
+            <Icon size={16} className="md:w-5 md:h-5" />
+          </div>
+          <div>
+            <h3 className="font-black text-slate-900 uppercase tracking-tight leading-none text-xs md:text-sm">{title}</h3>
+            <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 md:mt-1.5">{items.length} Records</p>
+          </div>
         </div>
-        <div>
-          <h3 className="font-black text-slate-900 uppercase tracking-tight leading-none text-xs md:text-sm">{title}</h3>
-          <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 md:mt-1.5">{items.length} Records</p>
+        <div className={`p-2 rounded-lg bg-white/50 text-slate-400 group-hover:text-slate-600 transition-all ${!isExpanded ? 'rotate-180' : ''}`}>
+          <ChevronUp size={16} />
         </div>
-      </div>
+      </button>
+      
+      <motion.div
+        initial={false}
+        animate={{ 
+          height: isExpanded ? 'auto' : 0,
+          opacity: isExpanded ? 1 : 0
+        }}
+        transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+        className="overflow-hidden bg-white/30"
+      >
+        <div className="p-3 md:p-4 space-y-3.5 md:space-y-4 max-h-[450px] md:max-h-[600px] overflow-y-auto custom-scrollbar">
+          {items.length === 0 ? (
+            <div className="h-32 md:h-40 flex flex-col items-center justify-center opacity-30 border-2 border-dashed border-slate-200 rounded-2xl">
+              <Icon size={24} className="mb-2 md:w-8 md:h-8" />
+              <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-center px-4">No active records</p>
+            </div>
+          ) : (
+            items.map(item => (
+              <EngagedBoardCard key={item.id} item={item} onReturn={onReturn} onDelete={onDelete} departments={departments} />
+            ))
+          )}
+        </div>
+      </motion.div>
     </div>
-    
-    <div className="p-3 md:p-4 flex-grow overflow-y-auto space-y-3.5 md:space-y-4 custom-scrollbar max-h-[450px] md:max-h-[600px]">
-      {items.length === 0 ? (
-        <div className="h-32 md:h-40 flex flex-col items-center justify-center opacity-30 border-2 border-dashed border-slate-200 rounded-2xl">
-          <Icon size={24} className="mb-2 md:w-8 md:h-8" />
-          <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-center px-4">No active records</p>
-        </div>
-      ) : (
-        items.map(item => (
-          <EngagedBoardCard key={item.id} item={item} onReturn={onReturn} onDelete={onDelete} departments={departments} />
-        ))
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 const StocksEngagedTab = ({ engaged = [], onReturn, onDeleteEngaged, departments = [], onEngage, inventory = [] }) => {
   const grouped = useMemo(() => {
@@ -165,7 +185,7 @@ const StocksEngagedTab = ({ engaged = [], onReturn, onDeleteEngaged, departments
         color="bg-red-600"
         bg="bg-red-50/30"
         onDelete={onDeleteEngaged}
-        departments={departments}
+          departments={departments}
       />
       </div>
     </div>
