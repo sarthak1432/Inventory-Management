@@ -81,23 +81,25 @@ function App() {
     localStorage.setItem('lastCheckMonth', currentMonthKey);
   }, []);
 
-  /* ── Faulty Stock Check (Proactive Alert) ── */
+  /* ── Weekly Faulty Stock Check (Runs on Mondays) ── */
   useEffect(() => {
     if (engLoading) return;
+
+    const today = new Date();
+    // 1 is Monday. Only trigger logic on Mondays.
+    if (today.getDay() !== 1) return;
 
     const hasFaulty = engaged.some(item => item.type === 'faulty');
     if (!hasFaulty) return;
 
-    const today = new Date();
-    const todayStr = today.toDateString(); // e.g. "Mon Apr 13 2026"
-    
-    // Check if we already notified about faulty stock today
+    const todayStr = today.toDateString(); 
+    // Prevent duplicate notifications on the same Monday
     if (localStorage.getItem('lastFaultyCheckDate') === todayStr) return;
 
     setNotifications(prev => {
       const updated = [{
         id: Date.now(),
-        message: "⚠️ Please exchange the defaulty stock found in your inventory",
+        message: "⚠️ Weekly Alert: Please exchange the defaulty stock found in your inventory",
         timestamp: today.toISOString(),
         read: false
       }, ...prev];
@@ -105,7 +107,6 @@ function App() {
     });
     
     localStorage.setItem('lastFaultyCheckDate', todayStr);
-    setIsNotifyOpen(true); // Automatically open the notification tray so they see it 'right now'
   }, [engaged, engLoading]);
 
   /* ── Memoised derived values ── */
