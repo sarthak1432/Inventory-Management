@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
@@ -7,16 +7,16 @@ export const useInventory = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const inventoryCollection = collection(db, 'inventory');
-
     useEffect(() => {
-        // Real-time listener for the inventory collection
+        // Create the collection reference inside the effect to avoid stale closures
+        const inventoryCollection = collection(db, 'inventory');
+
         const unsubscribe = onSnapshot(
             inventoryCollection,
             (snapshot) => {
-                const items = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
+                const items = snapshot.docs.map((docSnap) => ({
+                    id: docSnap.id,
+                    ...docSnap.data(),
                 }));
                 setInventory(items);
                 setLoading(false);
@@ -29,25 +29,41 @@ export const useInventory = () => {
         );
 
         return () => unsubscribe();
-    }, []);
+    }, []); // stable — no external deps
 
-    const addItem = async (item) => {
+    const addItem = useCallback(async (newItem) => {
         try {
-            await addDoc(inventoryCollection, {
-                ...item,
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp(),
-            });
+            // Check if item already exists in the same department (case-insensitive name)
+            const existingItem = inventory.find(i => 
+              i.name.toLowerCase() === newItem.name.toLowerCase() && 
+              i.department === newItem.department
+            );
+
+            if (existingItem) {
+                // If exists, increment quantity and update record
+                const newQuantity = Number(existingItem.quantity || 0) + Number(newItem.quantity || 0);
+                await updateDoc(doc(db, 'inventory', existingItem.id), {
+                    ...newItem,
+                    quantity: newQuantity,
+                    updatedAt: serverTimestamp(),
+                });
+            } else {
+                // If doesn't exist, create new record
+                await addDoc(collection(db, 'inventory'), {
+                    ...newItem,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp(),
+                });
+            }
         } catch (err) {
-            console.error("Add Item Error:", err);
+            console.error("Add/Update Item Error:", err);
             throw err;
         }
-    };
+    }, [inventory]);
 
-    const updateItem = async (id, updates) => {
+    const updateItem = useCallback(async (id, updates) => {
         try {
-            const itemRef = doc(db, 'inventory', id);
-            await updateDoc(itemRef, {
+            await updateDoc(doc(db, 'inventory', id), {
                 ...updates,
                 updatedAt: serverTimestamp(),
             });
@@ -55,17 +71,16 @@ export const useInventory = () => {
             console.error("Update Item Error:", err);
             throw err;
         }
-    };
+    }, []);
 
-    const deleteItem = async (id) => {
+    const deleteItem = useCallback(async (id) => {
         try {
-            const itemRef = doc(db, 'inventory', id);
-            await deleteDoc(itemRef);
+            await deleteDoc(doc(db, 'inventory', id));
         } catch (err) {
             console.error("Delete Item Error:", err);
             throw err;
         }
-    };
+    }, []);
 
     return { inventory, loading, error, addItem, updateItem, deleteItem };
 };

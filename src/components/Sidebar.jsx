@@ -12,6 +12,13 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import kitsLogo from '../assets/kits_logo.jpg';
 
+// Moved outside component — static data, no need to recreate on every render
+const MENU_ITEMS = [
+  { id: 'dashboard',      label: 'Dashboard',      icon: BarChart3 },
+  { id: 'inventory',      label: 'Inventory',      icon: Package   },
+  { id: 'stocks-engaged', label: 'Stocks Engaged', icon: Users     },
+];
+
 const SidebarItem = ({ icon: Icon, label, active, onClick, collapsed }) => (
   <button
     onClick={onClick}
@@ -39,11 +46,6 @@ const Sidebar = ({ activeTab, onTabChange, collapsed, onCollapsedChange }) => {
     onCollapsedChange?.(!collapsed);
   };
 
-  const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'inventory', label: 'Inventory', icon: Package   },
-  ];
-
   return (
     <>
       {/* Mobile toggle */}
@@ -51,8 +53,8 @@ const Sidebar = ({ activeTab, onTabChange, collapsed, onCollapsedChange }) => {
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className={`p-3 rounded-2xl shadow-xl transition-all duration-300 active:scale-90
-            ${mobileOpen 
-              ? 'bg-white text-slate-900 shadow-white/10' 
+            ${mobileOpen
+              ? 'bg-white text-slate-900 shadow-white/10'
               : 'bg-indigo-600 text-white shadow-indigo-900/40'}`}
         >
           {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -84,11 +86,11 @@ const Sidebar = ({ activeTab, onTabChange, collapsed, onCollapsedChange }) => {
         {/* Logo */}
         <div className={`flex items-center gap-3 px-4 py-6 mb-2 ${collapsed ? 'justify-center' : ''}`}>
           <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center p-1.5 shadow-lg shadow-black/10 shrink-0 overflow-hidden border border-white/10 group">
-             <img 
-               src={kitsLogo} 
-               alt="KITS Logo" 
-               className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500" 
-             />
+            <img
+              src={kitsLogo}
+              alt="KITS Logo"
+              className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500"
+            />
           </div>
           {!collapsed && (
             <div className="animate-fade-in overflow-hidden">
@@ -112,7 +114,7 @@ const Sidebar = ({ activeTab, onTabChange, collapsed, onCollapsedChange }) => {
               Main Menu
             </p>
           )}
-          {menuItems.map(item => (
+          {MENU_ITEMS.map(item => (
             <SidebarItem
               key={item.id}
               label={item.label}
@@ -138,7 +140,7 @@ const Sidebar = ({ activeTab, onTabChange, collapsed, onCollapsedChange }) => {
               <div className="overflow-hidden animate-fade-in">
                 <p className="text-sm font-bold text-slate-200 leading-none truncate">Administrator</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   <span className="text-[9px] text-emerald-500/80 font-bold tracking-widest uppercase">Online</span>
                 </div>
               </div>
@@ -165,4 +167,4 @@ const Sidebar = ({ activeTab, onTabChange, collapsed, onCollapsedChange }) => {
   );
 };
 
-export default Sidebar;
+export default React.memo(Sidebar);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { collection, onSnapshot, addDoc, serverTimestamp, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
@@ -12,18 +12,22 @@ const DEFAULT_DEPARTMENTS = [
   'Classroom',
 ];
 
+// Module-level collection reference — stable across renders
+const deptCollection = collection(db, 'departments');
+const deptQuery = query(deptCollection, orderBy('createdAt', 'asc'));
+
 export const useDepartments = () => {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const deptCollection = collection(db, 'departments');
-    const q = query(deptCollection, orderBy('createdAt', 'asc'));
+  // Ref guard prevents the seeding logic from running more than once
+  const seeded = useRef(false);
 
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      if (snapshot.empty && loading) {
-        // Seed default departments if the collection is empty
+  useEffect(() => {
+    const unsubscribe = onSnapshot(deptQuery, async (snapshot) => {
+      if (snapshot.empty && !seeded.current) {
+        seeded.current = true; // guard against double-fire
         try {
           for (const name of DEFAULT_DEPARTMENTS) {
             await addDoc(deptCollection, {
@@ -31,14 +35,17 @@ export const useDepartments = () => {
               createdAt: serverTimestamp()
             });
           }
+          // Snapshot will re-fire after seeding — loading handled there
         } catch (err) {
           console.error("Error seeding departments:", err);
           setError(err.message);
+          setLoading(false);
         }
-      } else {
-        const deptList = snapshot.docs.map(doc => ({
-          id: doc.id,
-          name: doc.data().name
+      } else if (!snapshot.empty) {
+        const deptList = snapshot.docs.map(docSnap => ({
+          id: docSnap.id,
+          name: docSnap.data().name,
+          head: docSnap.data().head || ''
         }));
         setDepartments(deptList);
         setLoading(false);
@@ -50,30 +57,41 @@ export const useDepartments = () => {
     });
 
     return () => unsubscribe();
-  }, [loading]);
+  }, []); // stable — no reactive deps needed
 
-  const addDepartment = async (name) => {
+  const addDepartment = useCallback(async (name) => {
     try {
-      const deptCollection = collection(db, 'departments');
       await addDoc(deptCollection, {
         name,
+        head: '',
         createdAt: serverTimestamp()
       });
     } catch (err) {
       console.error("Add Department Error:", err);
       throw err;
     }
-  };
+  }, []);
 
-  const deleteDepartment = async (id) => {
+  const updateDepartment = useCallback(async (id, updates) => {
     try {
-      const deptRef = doc(db, 'departments', id);
-      await deleteDoc(deptRef);
+      await updateDoc(doc(db, 'departments', id), {
+        ...updates,
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("Update Department Error:", err);
+      throw err;
+    }
+  }, []);
+
+  const deleteDepartment = useCallback(async (id) => {
+    try {
+      await deleteDoc(doc(db, 'departments', id));
     } catch (err) {
       console.error("Delete Department Error:", err);
       throw err;
     }
-  };
+  }, []);
 
-  return { departments, loading, error, addDepartment, deleteDepartment };
+  return { departments, loading, error, addDepartment, updateDepartment, deleteDepartment };
 };
