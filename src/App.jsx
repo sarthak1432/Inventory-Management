@@ -230,6 +230,8 @@ function App() {
               engaged={engaged} 
               onReturn={returnStock}
               departments={departments}
+              onEngage={() => handleOpenEngage(null)}
+              inventory={inventory}
             />
           ) : (
             <InventoryTab 
@@ -277,6 +279,7 @@ function App() {
         onClose={handleCloseEngage}
         item={activeEngageItem}
         onEngage={engageStock}
+        inventory={inventory}
       />
     </div>
   );

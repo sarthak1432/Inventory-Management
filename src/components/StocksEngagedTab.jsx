@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Users, ShoppingCart, UserCheck, AlertTriangle, ArrowLeftRight, Clock, Info } from 'lucide-react';
+import { Users, ShoppingCart, UserCheck, AlertTriangle, ArrowLeftRight, Clock, Info, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const EngagedBoardCard = ({ item, onReturn, departments = [] }) => {
@@ -24,18 +24,24 @@ const EngagedBoardCard = ({ item, onReturn, departments = [] }) => {
           <div>
             <h4 className="font-bold text-slate-900 text-sm leading-tight uppercase">{item.name}</h4>
             <div className="flex items-center gap-2 mt-0.5">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">{item.department}</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none shrink-0">{item.department}</p>
               {deptHead && (
                 <div className="flex items-center gap-1 pl-1.5 border-l border-slate-200">
                   <User size={8} className="text-indigo-400" />
-                  <span className="text-[9px] font-black text-indigo-600 uppercase tracking-tighter">{deptHead}</span>
+                  <span className="text-[9px] font-black text-indigo-500 uppercase tracking-tighter truncate max-w-[50px]">{deptHead}</span>
+                </div>
+              )}
+              {item.receiver && (
+                <div className="flex items-center gap-1 pl-1.5 border-l border-slate-200">
+                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                  <span className="text-[9px] font-black text-indigo-700 uppercase tracking-tight">{item.receiver}</span>
                 </div>
               )}
             </div>
           </div>
         </div>
         <div className="text-right">
-          <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest block">Qty</span>
+          <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest block leading-none">Qty</span>
           <span className="text-sm font-black text-slate-900">{item.quantity}</span>
         </div>
       </div>
@@ -72,24 +78,24 @@ const EngagedBoardCard = ({ item, onReturn, departments = [] }) => {
 };
 
 const Board = ({ title, icon: Icon, items, color, bg, onReturn, departments }) => (
-  <div className="flex flex-col h-full bg-slate-50/50 rounded-3xl border border-slate-200/60 overflow-hidden">
-    <div className={`p-5 border-b border-slate-200/60 ${bg} flex items-center justify-between`}>
-      <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg ${color}`}>
-          <Icon size={20} />
+  <div className="flex flex-col bg-slate-50/50 rounded-2xl md:rounded-3xl border border-slate-200/60 overflow-hidden h-full">
+    <div className={`p-4 md:p-5 border-b border-slate-200/60 ${bg} flex items-center justify-between`}>
+      <div className="flex items-center gap-2 md:gap-3">
+        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center text-white shadow-lg ${color}`}>
+          <Icon size={16} className="md:w-5 md:h-5" />
         </div>
         <div>
-          <h3 className="font-black text-slate-900 uppercase tracking-tight leading-none">{title}</h3>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1.5">{items.length} Records</p>
+          <h3 className="font-black text-slate-900 uppercase tracking-tight leading-none text-xs md:text-sm">{title}</h3>
+          <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 md:mt-1.5">{items.length} Records</p>
         </div>
       </div>
     </div>
     
-    <div className="p-4 flex-grow overflow-y-auto space-y-4 custom-scrollbar max-h-[600px]">
+    <div className="p-3 md:p-4 flex-grow overflow-y-auto space-y-3.5 md:space-y-4 custom-scrollbar max-h-[450px] md:max-h-[600px]">
       {items.length === 0 ? (
-        <div className="h-40 flex flex-col items-center justify-center opacity-30 border-2 border-dashed border-slate-200 rounded-2xl">
-          <Icon size={32} className="mb-2" />
-          <p className="text-[10px] font-bold uppercase tracking-widest text-center px-4">No active records in this category</p>
+        <div className="h-32 md:h-40 flex flex-col items-center justify-center opacity-30 border-2 border-dashed border-slate-200 rounded-2xl">
+          <Icon size={24} className="mb-2 md:w-8 md:h-8" />
+          <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-center px-4">No active records</p>
         </div>
       ) : (
         items.map(item => (
@@ -100,7 +106,7 @@ const Board = ({ title, icon: Icon, items, color, bg, onReturn, departments }) =
   </div>
 );
 
-const StocksEngagedTab = ({ engaged = [], onReturn, departments = [] }) => {
+const StocksEngagedTab = ({ engaged = [], onReturn, departments = [], onEngage, inventory = [] }) => {
   const grouped = useMemo(() => {
     return {
       'in-use': engaged.filter(i => i.type === 'in-use'),
@@ -110,7 +116,24 @@ const StocksEngagedTab = ({ engaged = [], onReturn, departments = [] }) => {
   }, [engaged]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in items-start">
+    <div className="space-y-8 pb-10">
+      {/* Header section with Engage Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="text-2xl font-black text-slate-900 leading-tight">Engaged Asset Tracking</h3>
+          <p className="text-slate-500 text-sm mt-0.5 font-medium">Monitoring active assignments across departments</p>
+        </div>
+        
+        <button
+          onClick={onEngage}
+          className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-slate-900 px-5 py-2.5 rounded-xl font-bold text-white text-sm transition-all shadow-md shadow-indigo-200 active:scale-95 group"
+        >
+          <ArrowLeftRight size={17} className="group-hover:rotate-180 transition-transform duration-500" />
+          Engage Stock
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 animate-fade-in items-start">
       <Board 
         title="IN USE" 
         icon={UserCheck} 
@@ -136,6 +159,7 @@ const StocksEngagedTab = ({ engaged = [], onReturn, departments = [] }) => {
         bg="bg-red-50/30"
         departments={departments}
       />
+      </div>
     </div>
   );
 };

@@ -30,7 +30,7 @@ export const useEngagedStocks = () => {
     return () => unsubscribe();
   }, []);
 
-  const engageStock = useCallback(async (inventoryItem, quantity, type, note) => {
+  const engageStock = useCallback(async (inventoryItem, quantity, type, note, receiver) => {
     const invRef = doc(db, 'inventory', inventoryItem.id);
     const engagedRef = doc(collection(db, 'engaged'));
 
@@ -51,6 +51,8 @@ export const useEngagedStocks = () => {
           inventoryId: inventoryItem.id,
           name: inventoryItem.name,
           department: inventoryItem.department,
+          assignee: inventoryItem.assignee || '', // Original assignee
+          receiver: receiver || inventoryItem.assignee || '', // New person 
           type, // 'in-use', 'sold', 'faulty'
           quantity: Number(quantity),
           note: note || '',
