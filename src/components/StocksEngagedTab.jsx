@@ -1,81 +1,97 @@
 import React, { useMemo, useState } from 'react';
-import { ShoppingCart, UserCheck, AlertTriangle, ArrowLeftRight, Clock, Plus, Trash2, ChevronUp } from 'lucide-react';
+import { ShoppingCart, UserCheck, AlertTriangle, ArrowLeftRight, Clock, Plus, Trash2, Info, Package } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { formatDate } from '../utils/helpers';
 
-const EngagedBoardCard = React.memo(({ item, onReturn, onDelete }) => {
+const StatCard = React.memo(({ title, value, icon: Icon, color, bg, active, onClick }) => (
+  <button 
+    onClick={onClick}
+    className={`min-w-[140px] sm:min-w-0 flex-1 bg-white border p-3.5 sm:p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 transition-all group relative overflow-hidden snap-center
+      ${active ? 'border-indigo-600 shadow-md ring-1 ring-indigo-600/10' : 'border-slate-200 hover:border-slate-300 hover:shadow-sm'}`}
+  >
+    {active && <div className="absolute top-0 right-0 w-6 h-6 md:w-8 md:h-8 bg-indigo-600 transform translate-x-3 -translate-y-3 md:translate-x-4 md:-translate-y-4 rotate-45" />}
+    <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl ${bg} flex items-center justify-center ${color} group-hover:scale-110 transition-transform shadow-sm shrink-0`}>
+      <Icon size={20} className="md:w-[22px] md:h-[22px]" />
+    </div>
+    <div className="text-left w-full truncate">
+      <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1 truncate">{title}</p>
+      <h4 className="text-xl md:text-2xl font-black text-slate-900 leading-none">{value}</h4>
+    </div>
+  </button>
+));
+
+const EngagementRow = React.memo(({ item, onReturn, onDelete }) => {
   const isReturnable = item.type === 'in-use';
   
   return (
     <motion.div 
       layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="bg-white border border-slate-100 rounded-xl p-3 shadow-sm hover:shadow-md transition-all group relative"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white border border-slate-200 rounded-2xl p-4 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-indigo-200 transition-all group"
     >
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-slate-50 flex items-center justify-center font-bold text-[9px] text-slate-400 border border-slate-100 uppercase">
-            {item.name.substring(0, 2)}
+      <div className="flex items-start md:items-center gap-3 md:gap-4 flex-grow w-full md:max-w-md">
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center font-black text-xs md:text-sm text-slate-400 uppercase shrink-0">
+          {item.name.substring(0, 2)}
+        </div>
+        <div className="min-w-0 flex-grow">
+          <div className="flex items-center justify-between md:justify-start gap-2 mb-1 md:mb-1.5">
+            <h4 className="font-black text-slate-900 uppercase tracking-tight truncate text-sm md:text-base">{item.name}</h4>
+            <span className="px-2 py-0.5 bg-slate-100 text-[9px] md:text-[10px] font-bold text-slate-500 rounded-md uppercase tracking-wider shrink-0 capitalize">{item.department}</span>
           </div>
-          <div>
-            <h4 className="font-bold text-slate-900 text-[13px] leading-tight uppercase tracking-tight">{item.name}</h4>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="text-[8px] font-black text-indigo-600 uppercase tracking-widest">{item.department}</span>
-              {item.receiver && (
-                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tight pl-1.5 border-l border-slate-200">
-                  {item.receiver}
-                </span>
-              )}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 text-slate-400 text-[10px] md:text-[11px] font-bold uppercase tracking-wider">
+            {item.receiver && (
+              <div className="flex items-center gap-1.5 text-indigo-600 truncate">
+                <UserCheck size={12} className="shrink-0" />
+                <span className="truncate">{item.receiver}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Clock size={12} />
+              <span>{formatDate(item.timestamp)}</span>
             </div>
           </div>
-        </div>
-        <div className="text-right">
-          <p className="text-[13px] font-black text-slate-900 leading-none">{item.quantity}</p>
-          <p className="text-[7px] font-bold text-slate-300 uppercase tracking-widest">Units</p>
         </div>
       </div>
 
-      {item.note && (
-        <p className="text-[9px] text-slate-500 font-medium italic mb-3 line-clamp-1 opacity-70">
-          "{item.note}"
-        </p>
-      )}
-
-      <div className="flex items-center justify-between pt-2.5 border-t border-slate-50">
-        <div className="flex items-center gap-1 text-slate-400">
-          <Clock size={9} />
-          <span className="text-[8px] font-bold uppercase tracking-widest">
-            {formatDate(item.timestamp)}
-          </span>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 md:gap-6 lg:gap-10 w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t border-slate-50 md:border-0 sm:justify-between">
+        <div className="flex items-center justify-between sm:block w-full sm:w-auto">
+          <p className="text-[9px] md:text-[10px] font-black text-slate-300 uppercase tracking-widest mb-0 sm:mb-1">Quantity</p>
+          <p className="text-sm md:text-lg font-black text-slate-900 leading-none">{item.quantity} <span className="text-[9px] md:text-[10px] text-slate-400">UNITS</span></p>
         </div>
-        
-        <div className="flex gap-1.5">
+
+        <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
+          {item.note && (
+            <div className="hidden lg:block group/note relative">
+              <div className="p-2 transition-colors text-slate-300 hover:text-indigo-400">
+                <Info size={18} />
+              </div>
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-900 text-white text-[10px] rounded-lg opacity-0 invisible group-hover/note:opacity-100 group-hover/note:visible transition-all z-20 font-medium">
+                {item.note}
+              </div>
+            </div>
+          )}
+
           {isReturnable ? (
             <button
               onClick={() => onReturn?.(item)}
-              className="px-2.5 py-1 bg-slate-900 hover:bg-indigo-600 text-white rounded-lg transition-all text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5"
+              className="flex-1 sm:flex-none justify-center px-4 md:px-5 py-2 md:py-2.5 bg-slate-900 hover:bg-indigo-600 text-white rounded-xl transition-all text-[10px] md:text-[11px] font-black uppercase tracking-widest flex items-center gap-2"
             >
-              <ArrowLeftRight size={9} />
-              Return
+              <ArrowLeftRight size={14} />
+              <span>Return</span>
             </button>
           ) : (
-            <div className="flex items-center gap-1.5">
-              <span className="px-1.5 py-0.5 bg-slate-50 text-[8px] font-black text-slate-400 rounded-md border border-slate-100 uppercase tracking-wider scale-95">
-                {item.type === 'sold' ? 'Sold' : 'Faulty'}
-              </span>
-              <button
-                onClick={() => {
-                  if (window.confirm('Delete this record?')) {
-                    onDelete(item.id);
-                  }
-                }}
-                className="p-1 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                title="Delete Record"
-              >
-                <Trash2 size={13} />
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                if (window.confirm('Are you sure you want to permanently delete this record?')) {
+                  onDelete(item.id);
+                }
+              }}
+              className="flex-1 sm:flex-none justify-center px-4 md:px-5 py-2 md:py-2.5 bg-white border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-500 hover:bg-red-50 rounded-xl transition-all text-[10px] md:text-[11px] font-black uppercase tracking-widest flex items-center gap-2"
+            >
+              <Trash2 size={14} />
+              <span>Remove</span>
+            </button>
           )}
         </div>
       </div>
@@ -83,112 +99,91 @@ const EngagedBoardCard = React.memo(({ item, onReturn, onDelete }) => {
   );
 });
 
-// Memoized Board component that acts as a "Dropdown" Category
-const Board = React.memo(({ title, icon: Icon, items, color, bg, onReturn, onDelete, defaultOpen = true }) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
-  return (
-    <div className="flex flex-col bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm h-full hover:shadow-md transition-all">
-      {/* Category Header / Dropdown Trigger */}
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-full p-4 border-b border-slate-100 ${bg} flex items-center justify-between hover:bg-slate-50 transition-all text-left group`}
-      >
-        <div className="flex items-center gap-3">
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-lg ${color} group-hover:scale-105 transition-transform shrink-0`}>
-            <Icon size={16} />
-          </div>
-          <div>
-            <h3 className="font-black text-slate-900 uppercase tracking-tighter leading-none text-xs md:text-sm">{title}</h3>
-            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">{items.length} Active Records</p>
-          </div>
-        </div>
-        <div className={`p-1.5 rounded-lg bg-white/80 text-slate-400 group-hover:text-indigo-600 transition-all shadow-sm ${isOpen ? 'rotate-180 bg-indigo-50 text-indigo-600' : ''}`}>
-          <ChevronUp size={16} />
-        </div>
-      </button>
-      
-      {/* Collapsible List Container */}
-      <motion.div
-        initial={false}
-        animate={{ 
-          height: isOpen ? 'auto' : 0,
-          opacity: isOpen ? 1 : 0
-        }}
-        transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
-        className="overflow-hidden bg-white"
-      >
-        <div className="p-3 md:p-4 space-y-3 md:space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
-          {items.length === 0 ? (
-            <div className="h-40 flex flex-col items-center justify-center opacity-30 border-2 border-dashed border-slate-100 rounded-xl">
-              <Icon size={24} className="mb-3" />
-              <p className="text-[10px] font-bold uppercase tracking-widest text-center px-6 leading-relaxed">No current records in this category</p>
-            </div>
-          ) : (
-            items.map(item => (
-              <EngagedBoardCard key={item.id} item={item} onReturn={onReturn} onDelete={onDelete} />
-            ))
-          )}
-        </div>
-      </motion.div>
-    </div>
-  );
-});
-
 const StocksEngagedTab = ({ engaged = [], onReturn, onDeleteEngaged, onEngage }) => {
+  const [activeTab, setActiveTab] = useState('in-use');
+
   const grouped = useMemo(() => ({
     'in-use': engaged.filter(i => i.type === 'in-use'),
     'sold':   engaged.filter(i => i.type === 'sold'),
     'faulty':  engaged.filter(i => i.type === 'faulty')
   }), [engaged]);
 
+  const currentList = grouped[activeTab] || [];
+
   return (
-    <div className="space-y-6 md:space-y-8 pb-10 animate-fade-in px-1">
-      {/* Page Header standardized with Inventory tab */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6 md:space-y-8 pb-12 animate-fade-in px-1">
+      {/* Professional Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 pb-2 border-b border-slate-100">
         <div>
-          <h3 className="text-2xl font-black text-slate-900 tracking-tight">Stocks Engaged</h3>
-          <p className="text-slate-500 text-sm mt-0.5 font-medium">
-            Monitoring {engaged.length} active assignments across all workspaces
+          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Stocks Engaged</h3>
+          <p className="text-slate-500 text-xs sm:text-sm md:text-base font-medium mt-1">
+            Enterprise Monitoring Console & Asset Distribution
           </p>
         </div>
         
         <button
           onClick={onEngage}
-          className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-slate-900 px-4 py-2 md:px-5 md:py-2.5 rounded-xl font-bold text-white text-[10px] md:text-xs transition-all shadow-lg shadow-indigo-100 active:scale-95 group shrink-0"
+          className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-slate-900 px-5 py-3 md:px-5 md:py-2.5 rounded-xl font-bold text-white text-[11px] md:text-sm uppercase tracking-widest transition-all shadow-lg shadow-indigo-100 active:scale-95 group shrink-0 w-full sm:w-auto"
         >
           <Plus size={16} className="group-hover:rotate-90 transition-transform duration-300" />
-          Engage Stock
+          Engage New Stock
         </button>
       </div>
 
-      {/* 3-Column Grid Layout (Desktop) / Vertical Stack (Mobile) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in items-start pt-2">
-        <Board 
-          title="IN USE" 
+      {/* KPI Stats Row (Acts as secondary navigation) */}
+      <div className="flex overflow-x-auto sm:grid sm:grid-cols-3 gap-3 md:gap-5 pb-2 sm:pb-0 snap-x snap-mandatory -mx-1 px-1 custom-scrollbar">
+        <StatCard 
+          title="Active Pool" 
+          value={grouped['in-use'].length} 
           icon={UserCheck} 
-          items={grouped['in-use']} 
-          color="bg-indigo-600" 
-          bg="bg-indigo-50/20"
-          onReturn={onReturn}
-          onDelete={onDeleteEngaged}
+          color="text-indigo-600" 
+          bg="bg-indigo-50"
+          active={activeTab === 'in-use'}
+          onClick={() => setActiveTab('in-use')}
         />
-        <Board 
-          title="Sold Assets" 
+        <StatCard 
+          title="Finalised Sales" 
+          value={grouped['sold'].length} 
           icon={ShoppingCart} 
-          items={grouped['sold']} 
-          color="bg-emerald-600"
-          bg="bg-emerald-50/20"
-          onDelete={onDeleteEngaged}
+          color="text-emerald-600" 
+          bg="bg-emerald-50"
+          active={activeTab === 'sold'}
+          onClick={() => setActiveTab('sold')}
         />
-        <Board 
-          title="Faulty / Maintenance" 
+        <StatCard 
+          title="Maintenance / Faulty" 
+          value={grouped['faulty'].length} 
           icon={AlertTriangle} 
-          items={grouped['faulty']} 
-          color="bg-red-600"
-          bg="bg-red-50/20"
-          onDelete={onDeleteEngaged}
+          color="text-red-600" 
+          bg="bg-red-50"
+          active={activeTab === 'faulty'}
+          onClick={() => setActiveTab('faulty')}
         />
+      </div>
+
+      {/* Unified Management View */}
+      <div className="space-y-4 pt-2">
+        <div className="flex items-center justify-between px-2 mb-2">
+          <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">
+            {activeTab.replace('-', ' ')} Listings (Showing {currentList.length})
+          </h4>
+          <div className="h-px bg-slate-100 flex-grow mx-6 hidden sm:block" />
+        </div>
+
+        {currentList.length === 0 ? (
+          <div className="py-24 flex flex-col items-center justify-center bg-white border border-slate-200 border-dashed rounded-[2.5rem] opacity-40">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+              <Package size={32} className="text-slate-300" />
+            </div>
+            <p className="text-sm font-bold uppercase tracking-widest text-slate-400">No active records found</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {currentList.map(item => (
+              <EngagementRow key={item.id} item={item} onReturn={onReturn} onDelete={onDeleteEngaged} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
