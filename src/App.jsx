@@ -97,7 +97,7 @@ function App() {
         message: "⚠️ Weekly Alert: Please exchange the defaulty stock found in your inventory",
         timestamp: today.toISOString(),
         read: false
-      }, ...prev];
+       }, ...prev];
       return updated;
     });
     
@@ -106,8 +106,6 @@ function App() {
 
   /* ── Memoised derived values ── */
   const greeting = useMemo(() => getGreeting(), []);
-
-  const recentItems = useMemo(() => inventory.slice(0, 5), [inventory]);
 
   const uniqueDeptCount = useMemo(
     () => new Set(inventory.map(i => i.department).filter(Boolean)).size,

@@ -18,6 +18,7 @@ const StatCard = React.memo(({ title, value, icon: Icon, color, bg, active, onCl
       <h4 className="text-xl md:text-2xl font-black text-slate-900 leading-none">{value}</h4>
     </div>
   </button>
+  
 ));
 
 const EngagementRow = React.memo(({ item, onReturn, onDelete }) => {
