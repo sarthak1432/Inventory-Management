@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Save, Plus, Package, Layers, User, ChevronDown } from 'lucide-react';
+import { X, Save, Plus, Package, Layers, User, ChevronDown, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const EMPTY_FORM = {
@@ -8,7 +8,8 @@ const EMPTY_FORM = {
   customDepartment: '',
   quantity: 0,
   assignee: '',
-  assignTo: ''
+  assignTo: '',
+  location: ''
 };
 
 const InputField = ({ label, icon: Icon, ...props }) => (
@@ -61,7 +62,8 @@ const ItemModal = ({ isOpen, onClose, onSave, editingItem, departments }) => {
         ...editingItem,
         customDepartment: isPredefined ? '' : editingItem.department,
         department: isPredefined ? editingItem.department : "Custom / Other...",
-        assignTo: editingItem.assignTo || ''
+        assignTo: editingItem.assignTo || '',
+        location: editingItem.location || ''
       });
       setIsCustom(!isPredefined);
     } else {
@@ -153,6 +155,17 @@ const ItemModal = ({ isOpen, onClose, onSave, editingItem, departments }) => {
                       required
                       placeholder="e.g. MacBook Pro M3"
                       value={formData.name}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <InputField
+                      label="Storage Location"
+                      icon={MapPin}
+                      name="location"
+                      placeholder="e.g. Rack A, Shelf 3"
+                      value={formData.location}
                       onChange={handleChange}
                     />
                   </div>

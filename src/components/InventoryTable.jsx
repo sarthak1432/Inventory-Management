@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { Edit2, Trash2, User, Tag, AlertCircle, Link } from 'lucide-react';
+import { Edit2, Trash2, User, Tag, AlertCircle, Link, MapPin } from 'lucide-react';
 import { getStockStatus } from '../utils/helpers';
 
 // Memoized Internal components for maximum performance
@@ -49,6 +49,23 @@ const MobileCard = React.memo(({ item, onEdit, onDelete, onEngage }) => {
         >
           <Link size={14} /> Engage
         </button>
+        <div className="relative group/tooltip">
+          <button
+            className="p-2 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-400 shadow-sm hover:border-indigo-300 hover:text-indigo-600 transition-colors flex items-center justify-center"
+          >
+            <MapPin size={14} />
+          </button>
+          
+          {/* Tooltip */}
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-[10px] font-bold rounded-lg shadow-xl opacity-0 translate-y-1 group-hover/tooltip:opacity-100 group-hover/tooltip:translate-y-0 transition-all pointer-events-none whitespace-nowrap z-50">
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-slate-400 uppercase tracking-tighter text-[8px]">Storage Location</span>
+              <span>{item.location || 'Not Specified'}</span>
+            </div>
+            {/* Arrow */}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900" />
+          </div>
+        </div>
         <button
           onClick={() => onDelete(item.id)}
           className="p-2 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-400 shadow-sm hover:border-red-300 hover:text-red-600 transition-colors flex items-center justify-center"
@@ -130,6 +147,23 @@ const DesktopRow = React.memo(({ item, onEdit, onDelete, onEngage }) => {
           >
             <Edit2 size={14} />
           </button>
+          <div className="relative group/tooltip">
+            <button
+              className="p-2.5 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm transition-all"
+            >
+              <MapPin size={14} />
+            </button>
+
+            {/* Tooltip */}
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-[10px] font-bold rounded-lg shadow-xl opacity-0 translate-y-1 group-hover/tooltip:opacity-100 group-hover/tooltip:translate-y-0 transition-all pointer-events-none whitespace-nowrap z-50">
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-slate-400 uppercase tracking-tighter text-[8px]">Storage Location</span>
+                <span>{item.location || 'Not Specified'}</span>
+              </div>
+              {/* Arrow */}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900" />
+            </div>
+          </div>
           <button
             className="p-2.5 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 hover:shadow-sm transition-all"
             onClick={() => onDelete(item.id)}

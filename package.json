@@ -1,7 +1,9 @@
 {
   "name": "inventory-management",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "KITS Premium Inventory Management System for Enterprise Assets.",
+  "author": "KITS Admin",
   "type": "module",
   "scripts": {
     "dev": "vite",
