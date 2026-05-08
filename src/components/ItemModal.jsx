@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Save, Plus, Package, Layers, User, ChevronDown, MapPin } from 'lucide-react';
+import { X, Save, Plus, Package, Layers, User, ChevronDown, MapPin, IndianRupee } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const EMPTY_FORM = {
@@ -7,6 +7,7 @@ const EMPTY_FORM = {
   department: '',
   customDepartment: '',
   quantity: 0,
+  price: 0,
   assignee: '',
   assignTo: '',
   location: ''
@@ -180,6 +181,21 @@ const ItemModal = ({ isOpen, onClose, onSave, editingItem, departments }) => {
                       required
                       min="0"
                       value={formData.quantity}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div>
+                    <InputField
+                      label="Unit Price (₹)"
+                      icon={IndianRupee}
+                      type="number"
+                      name="price"
+                      required
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={formData.price}
                       onChange={handleChange}
                     />
                   </div>

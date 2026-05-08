@@ -186,7 +186,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div className="h-screen overflow-hidden bg-slate-50 text-slate-900 font-sans flex">
       {/* ── Sidebar ── */}
       <Sidebar
         activeTab={activeTab}
@@ -197,7 +197,7 @@ function App() {
 
       {/* ── Main column, offset by sidebar width ── */}
       <div
-        className={`min-h-screen flex flex-col transition-all duration-300 ease-in-out
+        className={`h-screen flex flex-col flex-grow transition-all duration-300 ease-in-out overflow-hidden
           ${sidebarCollapsed ? 'lg:pl-[72px]' : 'lg:pl-72'}`}
       >
         {/* ── Top Navbar ── */}
@@ -211,7 +211,7 @@ function App() {
         />
 
         {/* ── Page Content ── */}
-        <main className="flex-grow p-6 lg:p-8">
+        <main className="flex-grow overflow-y-auto p-6 lg:p-8 custom-scrollbar">
           {activeTab === 'dashboard' ? (
             <DashboardTab 
               greeting={greeting}

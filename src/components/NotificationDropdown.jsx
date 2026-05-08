@@ -8,7 +8,7 @@ const NotificationDropdown = ({
   notifications, 
   onDismiss 
 }) => {
-  return (
+  return (  
     <AnimatePresence>
       {isOpen && (
         <>

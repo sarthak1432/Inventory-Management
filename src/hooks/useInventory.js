@@ -21,7 +21,7 @@ export const useInventory = () => {
                 setInventory(items);
                 setLoading(false);
             },
-            (err) => {
+            (err) => { 
                 console.error("Firebase Error:", err);
                 setError(err.message);
                 setLoading(false);

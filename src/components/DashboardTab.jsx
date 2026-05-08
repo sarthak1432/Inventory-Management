@@ -12,9 +12,15 @@ const RecentRow = React.memo(({ item }) => (
         {item.name}
       </p>
     </div>
-    <div className="hidden sm:block text-right">
-      <p className="text-xs text-slate-400 font-medium">Qty</p>
-      <p className="text-sm font-bold text-slate-800">{item.quantity}</p>
+    <div className="flex items-center gap-4">
+      <div className="hidden sm:block text-right">
+        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">Price</p>
+        <p className="text-xs font-bold text-emerald-600">₹{item.price || 0}</p>
+      </div>
+      <div className="hidden sm:block text-right min-w-[40px]">
+        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">Qty</p>
+        <p className="text-sm font-bold text-slate-800">{item.quantity}</p>
+      </div>
     </div>
   </div>
 ));

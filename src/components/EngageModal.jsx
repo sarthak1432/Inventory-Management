@@ -8,8 +8,8 @@ const TYPES = [
   { id: 'faulty', label: 'Defaulty',   icon: AlertTriangle, color: 'text-red-600',    bg: 'bg-red-50',    border: 'border-red-100',    desc: 'Damaged or faulty' },
 ];
 
-const EngageModal = ({ isOpen, onClose, item, onEngage, inventory = [] }) => {
-  const [type, setType] = useState('in-use');
+const EngageModal = ({ isOpen, onClose, item, onEngage, inventory = [], initialType = 'in-use' }) => {
+  const [type, setType] = useState(initialType);
   const [quantity, setQuantity] = useState(1);
   const [note, setNote] = useState('');
   const [receiver, setReceiver] = useState('');
@@ -23,6 +23,7 @@ const EngageModal = ({ isOpen, onClose, item, onEngage, inventory = [] }) => {
 
   useEffect(() => {
     if (isOpen) {
+      setType(initialType);
       setQuantity(1);
       setNote('');
       setError(null);
